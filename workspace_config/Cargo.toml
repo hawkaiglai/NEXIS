@@ -1,0 +1,65 @@
+[workspace]
+resolver = "2"
+members = [
+    "nexis_kernel",
+    "ironveil_ui", 
+    "privacy_core",
+    "build_tools"
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["IronVeil Development Team"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/c0mr4de-laugh4l0t/IronVeil"
+homepage = "https://c0mr4de-laugh4l0t.github.io/Nexis-Website-/"
+description = "IronVeil - Privacy-focused live USB operating system built on the Nexis kernel"
+
+[workspace.dependencies]
+# Core kernel dependencies
+bootloader = "0.11.0"
+uart_16550 = "0.2"
+spin = "0.9"
+lazy_static = "1.4"
+pc-keyboard = "0.6"
+x86_64 = "0.14"
+
+# UI framework dependencies
+tui = "0.19"
+crossterm = "0.27"
+ratatui = "0.26"
+
+# Utility dependencies
+rand = { version = "0.8", default-features = false }
+heapless = "0.8"
+nb = "1.0"
+
+# Build dependencies
+cc = "1.0"
+bindgen = "0.69"
+
+# Privacy/crypto dependencies (prepared for future use)
+aes = { version = "0.8", default-features = false }
+sha2 = { version = "0.10", default-features = false }
+ring = { version = "0.17", default-features = false }
+
+[profile.dev]
+panic = "abort"
+opt-level = 0
+debug = true
+lto = false
+
+[profile.release]
+panic = "abort"
+opt-level = "s"  # Optimize for size
+debug = false
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.kernel]
+inherits = "release"
+opt-level = "z"  # Optimize aggressively for size
+panic = "abort"
+overflow-checks = false

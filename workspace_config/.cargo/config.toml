@@ -1,0 +1,64 @@
+[build]
+target-dir = "target"
+
+[target.x86_64-nexis]
+runner = "bootimage runner"
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+    "-C", "link-arg=-Tlinker.ld",
+    "-C", "relocation-model=static",
+    "-C", "code-model=kernel"
+]
+
+[target.x86_64-unknown-none]
+runner = "bootimage runner"
+rustflags = [
+    "-C", "link-arg=-nostartfiles", 
+    "-C", "relocation-model=static",
+    "-C", "code-model=kernel"
+]
+
+# QEMU runner configuration for testing
+[target.'cfg(target_os = "none")']
+runner = [
+    "qemu-system-x86_64",
+    "-serial", "stdio",
+    "-display", "none",
+    "-drive", "format=raw,file={}",
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    "-m", "256M",
+    "-enable-kvm"  # Remove this if KVM is not available
+]
+
+# Alternative runner for systems without KVM
+[env]
+QEMU_ARGS = "-serial stdio -display none -m 256M"
+QEMU_NO_KVM_ARGS = "-serial stdio -display none -m 256M -accel tcg"
+
+# Bootimage configuration
+[unstable]
+build-std = ["core", "compiler_builtins", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
+
+# Cargo aliases for common tasks
+[alias]
+kernel = "build --package nexis_kernel"
+ui = "build --package ironveil_ui"
+privacy = "build --package privacy_core"
+tools = "build --package build_tools"
+
+# Build bootable image
+bootimg = "bootimage --package nexis_kernel"
+
+# Run in QEMU with different configurations
+run-kernel = "bootimage run --package nexis_kernel"
+run-debug = "bootimage run --package nexis_kernel -- -s -S"
+run-nokvm = "bootimage run --package nexis_kernel -- -accel tcg"
+
+# Testing aliases
+test-kernel = "test --package nexis_kernel"
+test-all = "test --workspace"
+
+# Linting and formatting
+check-all = "clippy --workspace -- -D warnings"
+fmt-all = "fmt --all"

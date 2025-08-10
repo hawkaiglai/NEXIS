@@ -1,0 +1,17 @@
+[toolchain]
+channel = "nightly-2024-01-01"
+components = [
+    "rust-src",
+    "llvm-tools-preview",
+    "clippy",
+    "rustfmt"
+]
+targets = [
+    "x86_64-unknown-none",
+    "x86_64-unknown-linux-gnu"
+]
+profile = "minimal"
+
+[env]
+RUST_BACKTRACE = "1"
+RUSTFLAGS = "-C link-arg=-nostartfiles"
